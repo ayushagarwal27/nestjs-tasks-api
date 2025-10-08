@@ -1,0 +1,26 @@
+### Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+GET {{baseUrl}}
+
+
+### GET All Tasks
+GET {{baseUrl}}/tasks
+
+###
+# @name createTask
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+
+{
+    "title":"Learn NestJS",
+    "description":"Complete NestJS Course",
+    "status":"OPEN"
+}
+
+### set task id
+@taskId = {{createTask.response.body.id}}
+
+GET {{baseUrl}}/tasks/{{taskId}}
+
