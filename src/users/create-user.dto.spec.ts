@@ -32,17 +32,36 @@ describe('CreateUserDto', () => {
     expect(errors[0].constraints).toHaveProperty('isEmail');
   });
 
-  it('should fail on invalid password', async () => {
+  const testPassword = async (password: string, message: string) => {
     // Arrange
-    dto.password = 'john1234';
+    dto.password = password;
 
     // Act
     const errors = await validate(dto);
+    const passwordError = errors.find((error) => error.property === 'password');
+    const messages = Object.values(passwordError?.constraints ?? {});
 
     // Assert
-    expect(errors.length).toBe(1);
-    expect(errors[0].property).toBe('password');
-    expect(errors[0].constraints).toHaveProperty('isStrongPassword');
+    expect(passwordError).not.toBeUndefined();
+    expect(messages).toContain(message);
+  };
+
+  it('should fail without 1 uppercase letter in password', async () => {
+    await testPassword(
+      '12333as$ss',
+      'password must contain at least 1 uppercase letter',
+    );
+  });
+
+  it('should fail without at-least 1 number in password', async () => {
+    await testPassword('asasA$as', 'password must contain at least 1 number');
+  });
+
+  it('password should fail without at-least 1 special character', async () => {
+    await testPassword(
+      'asa12sAas',
+      'Password must contain at least 1 special character',
+    );
   });
 
   it('should fail on invalid name', async () => {
